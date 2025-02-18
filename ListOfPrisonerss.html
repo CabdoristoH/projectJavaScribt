@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prisoner Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, textarea, button {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .records-list {
+            margin-top: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .record-item {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 10px;
+        }
+
+        .delete-btn {
+            background-color: #ff4444;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    
+    
+    <div class="form-container">
+        <h2>Add New Record</h2>
+        <form id="recordForm">
+            <div class="form-group">
+                <label for="name">Full Name:</label>
+                <input type="text" id="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="age">Age:</label>
+                <input type="number" id="age" required min="1">
+            </div>
+
+            <div class="form-group">
+                <label for="info">Short Info:</label>
+                <textarea id="info" rows="3" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="id">ID Number:</label>
+                <input type="number" id="id" required>
+            </div>
+
+            <div class="form-group">
+                <label for="case">Case Number:</label>
+                <input type="text" id="case" required>
+            </div>
+
+            <div class="form-group">
+                <label for="reason">Reason:</label>
+                <textarea id="reason" rows="3" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="releaseDate">Day of Release:</label>
+                <input type="date" id="releaseDate" required>
+            </div>
+
+            <button type="submit">Add Record</button>
+        </form>
+    </div>
+
+    <div class="records-list">
+        <h2>Prisoner Records</h2>
+        <div id="recordsContainer"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', loadRecords);
+
+        document.getElementById('recordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const record = {
+                name: document.getElementById('name').value,
+                age: document.getElementById('age').value,
+                info: document.getElementById('info').value,
+                id: document.getElementById('id').value,
+                case: document.getElementById('case').value,
+                reason: document.getElementById('reason').value,
+                releaseDate: document.getElementById('releaseDate').value
+            };
+
+            if(validateRecord(record)) {
+                saveRecord(record);
+                this.reset();
+            }
+        });
+
+        function validateRecord(record) {
+            return record.name &&
+                   record.age > 0 &&
+                   record.info &&
+                   record.id &&
+                   record.case &&
+                   record.reason &&
+                   record.releaseDate;
+        }
+
+        function saveRecord(record) {
+            const records = getRecordsFromStorage();
+            records.push(record);
+            localStorage.setItem('prisonRecords', JSON.stringify(records));
+            displayRecords();
+        }
+
+        function getRecordsFromStorage() {
+            return JSON.parse(localStorage.getItem('prisonRecords')) || [];
+        }
+
+        function displayRecords() {
+            const records = getRecordsFromStorage();
+            const container = document.getElementById('recordsContainer');
+            
+            container.innerHTML = '';
+            
+            records.forEach((record, index) => {
+                const div = document.createElement('div');
+                div.className = 'record-item';
+                div.innerHTML = `
+                    <strong>${record.name}</strong> (Age: ${record.age})<br>
+                    ID: ${record.id} | Case: ${record.case}<br>
+                    Info: ${record.info}<br>
+                    Reason: ${record.reason}<br>
+                    Release Date: ${new Date(record.releaseDate).toLocaleDateString()}
+                    <button class="delete-btn" onclick="deleteRecord(${index})">Delete</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function deleteRecord(index) {
+            const records = getRecordsFromStorage();
+            records.splice(index, 1);
+            localStorage.setItem('prisonRecords', JSON.stringify(records));
+            displayRecords();
+        }
+
+        function loadRecords() {
+            displayRecords();
+        }
+
+        window.deleteRecord = deleteRecord;
+        window. edit= editrecord;
+    </script>
+</body>
+</html>

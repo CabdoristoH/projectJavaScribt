@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management System</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; }
+        .container { width: 50%; margin: auto; text-align: center; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); }
+        h2 { color: #343a40; }
+        input, button { margin: 5px; padding: 10px; border-radius: 5px; border: 1px solid #ddd; }
+        button { cursor: pointer; background-color: #007bff; color: white; border: none; }
+        button:hover { background-color: #0056b3; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #007bff; color: white; }
+    </style>
+</head>
+<body>
+
+    
+    
+    <div class="container">
+        <h2>User Management System</h2>
+        <input type="text" id="name" placeholder="Enter Name">
+        <input type="number" id="number" placeholder="Enter Number">
+        <button onclick="addUser()">Add User</button>
+        <br><br>
+        <input type="text" id="search" placeholder="Search by Name">
+        <button onclick="searchUser()">Search</button>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Number</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="userTable"></tbody>
+        </table>
+    </div>
+
+    <script>
+        let users = JSON.parse(localStorage.getItem("users")) || [];
+
+        function renderUsers(filteredUsers = users) {
+            const table = document.getElementById("userTable");
+            table.innerHTML = "";
+            filteredUsers.forEach((user, index) => {
+                table.innerHTML += `
+                    <tr>
+                        <td>${user.name}</td>
+                        <td>${user.number}</td>
+                        <td>
+                            <button onclick="editUser(${index})">Edit</button>
+                            <button onclick="deleteUser(${index})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            localStorage.setItem("users", JSON.stringify(users));
+        }
+
+        function addUser() {
+            const name = document.getElementById("name").value;
+            const number = document.getElementById("number").value;
+            if (name && number) {
+                users.push({ name, number });
+                renderUsers();
+                document.getElementById("name").value = "";
+                document.getElementById("number").value = "";
+            }
+        }
+
+        function editUser(index) {
+            const newName = prompt("Enter new name", users[index].name);
+            const newNumber = prompt("Enter new number", users[index].number);
+            if (newName && newNumber) {
+                users[index] = { name: newName, number: newNumber };
+                renderUsers();
+            }
+        }
+
+        function deleteUser(index) {
+            users.splice(index, 1);
+            renderUsers();
+        }
+
+        function searchUser() {
+            const filter = document.getElementById("search").value.toLowerCase();
+            const filteredUsers = users.filter(user => user.name.toLowerCase().includes(filter));
+            renderUsers(filteredUsers);
+        }
+
+        renderUsers();
+    </script>
+</body>
+</html>

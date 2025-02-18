@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login Form</title>
+  <style>
+    /* Import Google Font */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+    /* General Styles */
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: url("./image/background\ pic.jpeg") no-repeat center center/cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      position: relative;
+    }
+
+    /* Background Overlay */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6); /* Dark overlay */
+    }
+
+    /* Login Container */
+    .login-container {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      width: 320px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-container h2 {
+      margin-bottom: 20px;
+      color: #333;
+      font-weight: 600;
+    }
+
+    /* Form Group */
+    .form-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #444;
+    }
+
+    .form-group select,
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    /* Button */
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease-in-out;
+      font-weight: 600;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    /* Error Message */
+    .error-message {
+      color: red;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Admin Login</h2>
+    <form id="login-form">
+      <div class="form-group">
+        <label for="admin">Select Admin:</label>
+        <select id="admin" name="admin" required>
+          <option value="" disabled selected>Choose an admin</option>
+          <option value="salman">salman</option>
+          <option value="siciid">siciid</option>
+          <option value="ladan">ladan</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <button type="submit">Login</button>
+      <div id="error-message" class="error-message"></div>
+    </form>
+  </div>
+
+  <script>
+    // Predefined passwords for admins
+    const adminPasswords = {
+      salman: "123",
+      siciid: "456",
+      ladan: "789",
+    };
+
+// Handle form submission
+document.getElementById("login-form").addEventListener("submit", function (event) {
+  event.preventDefault(); 
+
+  // Get selected admin and entered password
+  const selectedAdmin = document.getElementById("admin").value;
+  const enteredPassword = document.getElementById("password").value;
+
+  // Get the error message element
+  const errorMessage = document.getElementById("error-message");
+
+  // Check if the selected admin exists in the predefined passwords
+  if (adminPasswords[selectedAdmin]) {
+    if (adminPasswords[selectedAdmin] === enteredPassword) {
+      errorMessage.textContent = "Login successful!";
+      errorMessage.style.color = "green";
+
+      // Redirect to dashboard.html after successful login
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 1000); // Delay to show success message
+    } else {
+      errorMessage.textContent = "Incorrect password. Please try again.";
+      errorMessage.style.color = "red";
+    }
+  } else {
+    errorMessage.textContent = "Admin not found. Please select a valid admin.";
+    errorMessage.style.color = "red";
+  }
+});
+
+  </script>
+</body>
+</html>
