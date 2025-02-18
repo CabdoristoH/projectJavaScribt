@@ -66,24 +66,6 @@
             object-fit: cover;
             border-radius: 50%;
         }
-        .search-group {
-            margin-bottom: 20px;
-        }
-        .search-group input {
-            width: 300px;
-            padding: 8px;
-            box-sizing: border-box;
-        }
-        .search-group button {
-            padding: 8px 15px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-        }
-        .search-group button:hover {
-            background-color: #0056b3;
-        }
     </style>
 </head>
 <body>
@@ -94,11 +76,6 @@
         <div class="section">
             <h2 id="formTitle">Add New Commander</h2>
             <form id="commanderForm">
-                <input type="hidden" id="commanderIndex" value="-1">
-                <div class="form-group">
-                    <label for="commanderId">Commander ID</label>
-                    <input type="text" id="commanderId" name="commanderId" required>
-                </div>
                 <div class="form-group">
                     <label for="commanderName">Full Name</label>
                     <input type="text" id="commanderName" name="commanderName" required>
@@ -108,374 +85,32 @@
                     <input type="text" id="commanderRank" name="commanderRank" required>
                 </div>
                 <div class="form-group">
-                    <label for="commanderDepartment">Department</label>
-                    <input type="text" id="commanderDepartment" name="commanderDepartment" required>
-                </div>
-                <div class="form-group">
-                    <label for="commanderContact">Contact Number</label>
-                    <input type="text" id="commanderContact" name="commanderContact" required>
-                </div>
-                <div class="form-group">
-                    <label for="commanderImage">Upload Image</label>
-                    <input type="file" id="commanderImage" name="commanderImage" accept="image/*">
-                </div>
-                <div class="form-group">
-                    <button type="submit" id="submitButton">Add Commander</button>
-                    <button type="button" id="cancelButton" style="display: none;">Cancel</button>
+                    <button type="submit" id="submitCommanderButton">Add Commander</button>
+                    <button type="button" id="cancelCommanderButton" style="display: none;">Cancel</button>
                 </div>
             </form>
         </div>
 
-        <!-- Search Commanders -->
-        <div class="search-group">
-            <input type="text" id="searchInput" placeholder="Search by Name, ID, or Department">
-            <button onclick="searchCommanders()">Search</button>
-        </div>
-
-        <!-- Commanders List -->
-        <div class="section">
-            <h2>Commanders List</h2>
-            <table id="commanderTable">
-                <thead>
-                    <tr>
-                        <th>Image</th>
-                        <th>Commander ID</th>
-                        <th>Name</th>
-                        <th>Rank</th>
-                        <th>Department</th>
-                        <th>Contact</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Commanders will be dynamically added here -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <script>
-        let commanders = [];
-        let editIndex = -1;
-
-        // Function to add or update a commander
-        document.getElementById('commanderForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const commanderId = document.getElementById('commanderId').value;
-            const commanderName = document.getElementById('commanderName').value;
-            const commanderRank = document.getElementById('commanderRank').value;
-            const commanderDepartment = document.getElementById('commanderDepartment').value;
-            const commanderContact = document.getElementById('commanderContact').value;
-            const commanderImage = document.getElementById('commanderImage').files[0];
-
-            const commander = {
-                id: commanderId,
-                name: commanderName,
-                rank: commanderRank,
-                department: commanderDepartment,
-                contact: commanderContact,
-                image: commanderImage ? URL.createObjectURL(commanderImage) : null
-            };
-
-            if (editIndex === -1) {
-                // Add new commander
-                commanders.push(commander);
-            } else {
-                // Update existing commander
-                commanders[editIndex] = commander;
-                editIndex = -1;
-                document.getElementById('submitButton').textContent = 'Add Commander';
-                document.getElementById('cancelButton').style.display = 'none';
-                document.getElementById('formTitle').textContent = 'Add New Commander';
-            }
-
-            renderCommanders();
-            document.getElementById('commanderForm').reset();
-        });
-
-        // Function to render commanders in the table
-        function renderCommanders(filteredCommanders = commanders) {
-            const commanderTable = document.getElementById('commanderTable').getElementsByTagName('tbody')[0];
-            commanderTable.innerHTML = '';
-
-            filteredCommanders.forEach((commander, index) => {
-                const newRow = commanderTable.insertRow();
-
-                const imageCell = newRow.insertCell(0);
-                if (commander.image) {
-                    const img = document.createElement('img');
-                    img.src = commander.image;
-                    img.classList.add('commander-image');
-                    imageCell.appendChild(img);
-                } else {
-                    imageCell.textContent = 'No Image';
-                }
-
-                newRow.insertCell(1).textContent = commander.id;
-                newRow.insertCell(2).textContent = commander.name;
-                newRow.insertCell(3).textContent = commander.rank;
-                newRow.insertCell(4).textContent = commander.department;
-                newRow.insertCell(5).textContent = commander.contact;
-
-                const actionCell = newRow.insertCell(6);
-                const editButton = document.createElement('button');
-                editButton.textContent = 'Edit';
-                editButton.addEventListener('click', () => editCommander(index));
-                actionCell.appendChild(editButton);
-
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Delete';
-                deleteButton.addEventListener('click', () => deleteCommander(index));
-                actionCell.appendChild(deleteButton);
-            });
-        }
-
-        // Function to edit a commander
-        function editCommander(index) {
-            const commander = commanders[index];
-            document.getElementById('commanderId').value = commander.id;
-            document.getElementById('commanderName').value = commander.name;
-            document.getElementById('commanderRank').value = commander.rank;
-            document.getElementById('commanderDepartment').value = commander.department;
-            document.getElementById('commanderContact').value = commander.contact;
-            editIndex = index;
-            document.getElementById('submitButton').textContent = 'Update Commander';
-            document.getElementById('cancelButton').style.display = 'inline-block';
-            document.getElementById('formTitle').textContent = 'Edit Commander';
-        }
-
-        // Function to delete a commander
-        function deleteCommander(index) {
-            commanders.splice(index, 1);
-            renderCommanders();
-        }
-
-        // Function to search commanders
-        function searchCommanders() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const filteredCommanders = commanders.filter(commander =>
-                commander.name.toLowerCase().includes(searchTerm) ||
-                commander.id.toLowerCase().includes(searchTerm) ||
-                commander.department.toLowerCase().includes(searchTerm)
-            );
-            renderCommanders(filteredCommanders);
-        }
-
-        // Cancel edit mode
-        document.getElementById('cancelButton').addEventListener('click', () => {
-            document.getElementById('commanderForm').reset();
-            editIndex = -1;
-            document.getElementById('submitButton').textContent = 'Add Commander';
-            document.getElementById('cancelButton').style.display = 'none';
-            document.getElementById('formTitle').textContent = 'Add New Commander';
-        });
-    </script>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f4f4f4;
-                margin: 0;
-                padding: 0;
-            }
-            .container {
-                width: 80%;
-                margin: 50px auto;
-                background: #fff;
-                padding: 20px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            }
-            h1, h2 {
-                text-align: center;
-                color: #333;
-            }
-            .form-group {
-                margin-bottom: 15px;
-            }
-            .form-group label {
-                display: block;
-                margin-bottom: 5px;
-                color: #333;
-            }
-            .form-group input, .form-group select, .form-group textarea {
-                width: 100%;
-                padding: 8px;
-                box-sizing: border-box;
-            }
-            .form-group button {
-                padding: 10px 15px;
-                background-color: #28a745;
-                color: #fff;
-                border: none;
-                cursor: pointer;
-            }
-            .form-group button:hover {
-                background-color: #218838;
-            }
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 20px;
-            }
-            table, th, td {
-                border: 1px solid #ddd;
-            }
-            th, td {
-                padding: 10px;
-                text-align: left;
-            }
-            th {
-                background-color: #f8f9fa;
-            }
-            .shift-actions {
-                display: flex;
-                gap: 5px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>Shift Commanders Guard System</h1>
-    
-            <!-- Add/Edit Shift Form -->
-            <div class="section">
-                <h2 id="formTitle">Add Shift Schedule</h2>
-                <form id="shiftForm">
-                    <input type="hidden" id="shiftIndex" value="-1">
-                    <div class="form-group">
-                        <label for="shiftName">Shift Name</label>
-                        <select id="shiftName" name="shiftName" required>
-                            <option value="Morning">Morning</option>
-                            <option value="Afternoon">Afternoon</option>
-                            <option value="Night">Night</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="commanderName">Commander Name</label>
-                        <input type="text" id="commanderName" name="commanderName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="shiftDate">Shift Date</label>
-                        <input type="date" id="shiftDate" name="shiftDate" required>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" id="submitButton">Add Shift</button>
-                        <button type="button" id="cancelButton" style="display: none;">Cancel</button>
-                    </div>
-                </form>
-            </div>
-    
-            <!-- Shift Schedules List -->
-            <div class="section">
-                <h2>Shift Schedules</h2>
-                <table id="shiftTable">
-                    <thead>
-                        <tr>
-                            <th>Shift Name</th>
-                            <th>Commander Name</th>
-                            <th>Shift Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Shifts will be dynamically added here -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    
         <script>
-            let shifts = [];
-            let editIndex = -1;
-    
-            // Function to add or update a shift
-            document.getElementById('shiftForm').addEventListener('submit', function(event) {
+            let commanders = [];
+            let editCommanderIndex = -1;
+
+            document.getElementById('commanderForm').addEventListener('submit', function(event) {
                 event.preventDefault();
-    
-                const shiftName = document.getElementById('shiftName').value;
                 const commanderName = document.getElementById('commanderName').value;
-                const shiftDate = document.getElementById('shiftDate').value;
-    
-                const shift = {
-                    name: shiftName,
-                    commander: commanderName,
-                    date: shiftDate
-                };
-    
-                if (editIndex === -1) {
-                    // Add new shift
-                    shifts.push(shift);
+                const commanderRank = document.getElementById('commanderRank').value;
+                
+                const commander = { name: commanderName, rank: commanderRank };
+                
+                if (editCommanderIndex === -1) {
+                    commanders.push(commander);
                 } else {
-                    // Update existing shift
-                    shifts[editIndex] = shift;
-                    editIndex = -1;
-                    document.getElementById('submitButton').textContent = 'Add Shift';
-                    document.getElementById('cancelButton').style.display = 'none';
-                    document.getElementById('formTitle').textContent = 'Add Shift Schedule';
+                    commanders[editCommanderIndex] = commander;
+                    editCommanderIndex = -1;
                 }
-    
-                renderShifts();
-                document.getElementById('shiftForm').reset();
+                document.getElementById('commanderForm').reset();
             });
-    
-            // Function to render shifts in the table
-            function renderShifts() {
-                const shiftTable = document.getElementById('shiftTable').getElementsByTagName('tbody')[0];
-                shiftTable.innerHTML = '';
-    
-                shifts.forEach((shift, index) => {
-                    const newRow = shiftTable.insertRow();
-    
-                    newRow.insertCell(0).textContent = shift.name;
-                    newRow.insertCell(1).textContent = shift.commander;
-                    newRow.insertCell(2).textContent = shift.date;
-    
-                    const actionCell = newRow.insertCell(3);
-                    actionCell.className = 'shift-actions';
-    
-                    const editButton = document.createElement('button');
-                    editButton.textContent = 'Edit';
-                    editButton.addEventListener('click', () => editShift(index));
-                    actionCell.appendChild(editButton);
-    
-                    const deleteButton = document.createElement('button');
-                    deleteButton.textContent = 'Delete';
-                    deleteButton.addEventListener('click', () => deleteShift(index));
-                    actionCell.appendChild(deleteButton);
-                });
-            }
-    
-            // Function to edit a shift
-            function editShift(index) {
-                const shift = shifts[index];
-                document.getElementById('shiftName').value = shift.name;
-                document.getElementById('commanderName').value = shift.commander;
-                document.getElementById('shiftDate').value = shift.date;
-                editIndex = index;
-                document.getElementById('submitButton').textContent = 'Update Shift';
-                document.getElementById('cancelButton').style.display = 'inline-block';
-                document.getElementById('formTitle').textContent = 'Edit Shift Schedule';
-            }
-    
-            // Function to delete a shift
-            function deleteShift(index) {
-                shifts.splice(index, 1);
-                renderShifts();
-            }
-    
-            // Cancel edit mode
-            document.getElementById('cancelButton').addEventListener('click', () => {
-                document.getElementById('shiftForm').reset();
-                editIndex = -1;
-                document.getElementById('submitButton').textContent = 'Add Shift';
-                document.getElementById('cancelButton').style.display = 'none';
-                document.getElementById('formTitle').textContent = 'Add Shift Schedule';
-            });
-    
-            // Initial render
-            renderShifts();
         </script>
-    </body>
-    </html>
+    </div>
 </body>
 </html>
